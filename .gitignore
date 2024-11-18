@@ -1,0 +1,6 @@
+# Fichiers complé
+/build/
+
+# Ignorer tout fichier temporaire
+/tmp/
+/.vscode/

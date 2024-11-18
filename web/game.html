@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        #canvas-container {
+            position: relative;
+            width: 400px;
+            margin: 0 auto;
+        }
+
+        #mycanvas {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 120px;
+            width: 99%;
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+        } 
+    </style>
+</head>
+
+<body>
+
+    <!-- ********************* html ********************* -->
+
+    <h1>Mosaic-A09 Game Web</h1>
+
+    <p>This demo shows you the basics to call our game routines using a
+    JavaScript module based on Wasm technology... Here, the default game is
+    created at startup and then it is printed as text within a <em>pre</em>
+    element.</p>
+
+    <pre id="result"></pre>
+
+    <hr>
+    <p><em>aurelien.esnard@u-bordeaux.fr, 2023.</em></p>
+
+    <!-- ********************* script ********************* -->
+
+    <canvas id='mycanvas' width="400" height="400"></canvas>
+    
+
+    <div class="button-container">
+        <button id="restartButton">Restart</button>
+        <button id="undoButton">Undo</button>
+        <button id="redoButton">Redo</button>
+        <button id="solveButton">Solve</button>
+        <button id="randomButton">Random</button>
+    </div>
+
+    <script src="game.js"></script>
+    <script>
+        const constraints = [
+            0, -1, -1, 3, -1, -1, 5, -1, -1, -1, -1, -1, 4,
+            -1, 1, 6, -1, 6, 3, -1, -1, -1, -1, -1, -1
+        ];
+
+        const constraintEnum = {
+            UNCONSTRAINED: -1,
+            MIN_CONSTRAINT: -1,
+            MAX_CONSTRAINT: 9
+        };
+
+        const colorsEnum = {
+            WHITE: 1,
+            BLACK: 2,
+            EMPTY: 3
+        };
+
+        var canvas = document.getElementById('mycanvas');
+        var ctx = canvas.getContext('2d');
+
+        // Set background color
+        ctx.fillStyle = "rgb(173, 216, 230)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        var gridSize = 5;
+
+        var cellSize = canvas.width / gridSize;
+
+        // Draw the grid and constraints
+        function drawGridAndConstraints() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgb(173, 216, 230)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.beginPath();
+            ctx.strokeStyle = "#000";
+
+            for (var x = 0; x <= canvas.width; x += cellSize) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+            }
+            for (var y = 0; y <= canvas.height; y += cellSize) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+            }
+            ctx.stroke();
+
+            // Draw the constraints
+            ctx.font = "bold 40px Arial";
+            ctx.fillStyle = "black";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            for (var i = 0; i < constraints.length; i++) {
+                var col = i % gridSize;
+                var row = Math.floor(i / gridSize);
+                var constraint = constraints[i];
+
+                if (constraint !== constraintEnum.UNCONSTRAINED) {
+                    var text = constraint !== constraintEnum.MIN_CONSTRAINT ? constraint.toString() : "?";
+                    var x = col * cellSize + cellSize / 2;
+                    var y = row * cellSize + cellSize / 2;
+                    ctx.fillText(text, x, y);
+                }
+            }
+
+            // Draw colors with reduced opacity
+            for (var i = 0; i < gridSize; i++) {
+                for (var j = 0; j < gridSize; j++) {
+                    var color = gameState[i][j];
+                    if (color !== colorsEnum.EMPTY) {
+                        ctx.globalAlpha = 0.5;
+                        ctx.fillStyle = color === colorsEnum.WHITE ? "rgba(255, 255, 255, 0.5)" : "rgba(0, 0, 0, 0.5)";
+                        ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                        ctx.globalAlpha = 1;
+                        // Draw constraint in black
+                        var constraint = constraints[i * gridSize + j];
+                        if (constraint !== constraintEnum.UNCONSTRAINED) {
+                            ctx.fillStyle = "black";
+                            ctx.fillText(constraint.toString(), j * cellSize + cellSize / 2, i * cellSize + cellSize / 2);
+                        }
+                    }
+                }
+            }
+        }
+
+        var gameState = Array.from({ length: gridSize }, () => Array.from({ length: gridSize }, () => colorsEnum.EMPTY));
+
+        // Redraw the grid and constraints
+        drawGridAndConstraints();
+
+        // Handle mouse click events
+        canvas.addEventListener('click', function (event) {
+            var rect = canvas.getBoundingClientRect();
+            var mouseX = event.clientX - rect.left;
+            var mouseY = event.clientY - rect.top;
+
+            var col = Math.floor(mouseX / cellSize);
+            var row = Math.floor(mouseY / cellSize);
+
+            gameState[row][col] = (gameState[row][col] % 3) + 1;
+
+            // Redraw the grid and constraints with updated colors
+            drawGridAndConstraints();
+        });
+
+        // Handle button clicks
+        document.getElementById('restartButton').addEventListener('click', function () {
+            //restart_function
+            console.log('Restart button clicked');
+        });
+
+        document.getElementById('undoButton').addEventListener('click', function () {
+            // undo_function
+            console.log('Undo button clicked');
+        });
+
+        document.getElementById('redoButton').addEventListener('click', function () {
+            // redo_function
+            console.log('Redo button clicked');
+        });
+
+        document.getElementById('solveButton').addEventListener('click', function () {
+            // solve_function
+            console.log('Solve button clicked');
+        });
+
+        document.getElementById('randomButton').addEventListener('click', function () {
+            // random_function
+            console.log('Random button clicked');
+        });
+
+    </script>
+
+</body>
+
+</html>
